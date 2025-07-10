@@ -1,0 +1,115 @@
+:root {
+  --accent-color: #336633;
+}
+
+
+/* 全体のスタイル */
+body {
+    font-family: 'Roboto', sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f5f5f5;
+    color: #333;
+}
+
+/* ヘッダー */
+header {
+    background-color: var(--accent-color);
+    color: white;
+    padding: 1rem;
+    text-align: center;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+header h1 {
+    margin: 0;
+    font-size: 24px;
+}
+
+/* メインコンテンツ */
+main {
+    padding: 1rem;
+    max-width: 800px;
+    margin: 1rem auto;
+    background-color: white;
+    border-radius: 0.5rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* フォーム */
+form {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+.form-fields {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+}
+
+fieldset {
+    border: none;
+    padding: 0;
+    margin: 0 0 2rem 0;
+    display: flex; /* 横並びを解除して縦並びに */
+    flex-direction: column; 
+    gap: 0.5rem;
+}
+
+legend {
+    font-size: 1.5rem;
+    font-weight: bold;
+    margin-bottom: 0.5rem;
+}
+
+label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.25rem 0.5rem;
+    margin-bottom: 0.5rem; /* 縦方向の余白を追加 */
+    border-radius: 4px;
+}
+
+input[type="checkbox"] {
+    accent-color: var(--accent-color);
+}
+
+label:hover {
+    background-color: #dcf1dc; /* ホバー時の背景色 */
+}
+
+.form-control {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 1rem;
+}
+
+/* 合計金額 */
+p {
+    font-size: 1.5rem;
+    font-weight: bold;
+    text-align: right;
+}
+
+/* ボタン */
+button {
+    background-color: var(--accent-color);
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: background-color 0.3s;
+}
+
+button:hover {
+    background-color: #3700b3;
+}
+
+button:active {
+    background-color: #30009c;
+}
