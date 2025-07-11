@@ -41,10 +41,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 total += value;
             }
         });
-        let registerPrice = total*0.3
         // 合計金額を表示
         totalPriceElement.textContent = total.toLocaleString();
-        registerPriceElement.textContent = registerPrice.toLocaleString();
+        registerPriceElement.textContent = (total*0.3).toLocaleString();
     });
 
     // Submitボタンを追加
@@ -60,7 +59,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }).join(', ');
 
         const total = totalPriceElement.textContent.replace(/,/g, ''); // 合計金額を取得
-        const googleFormURL = `https://docs.google.com/forms/d/e/1FAIpQLScoaUD7j_OMxA62nRL27xQQ0xtAASm9200pPOmJSJttPOMl8w/viewform?usp=pp_url&entry.62649312=性能カスタム（収入）&entry.56986843=${total}&entry.367017110=${encodeURIComponent(selectedItems)}`;
+        const googleFormURL = `https://docs.google.com/forms/d/e/1FAIpQLScoaUD7j_OMxA62nRL27xQQ0xtAASm9200pPOmJSJttPOMl8w/viewform?usp=pp_url&entry.62649312=性能カスタム（収入）&entry.56986843=${total*0.3}&entry.367017110=${encodeURIComponent(selectedItems)}`;
 
         window.open(googleFormURL, '_blank'); // Googleフォームを新しいタブで開く
     });
