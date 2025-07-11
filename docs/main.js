@@ -3,6 +3,7 @@ import { price } from './data/price.js'; // named exportとしてインポート
 document.addEventListener('DOMContentLoaded', () => {
     const formFields = document.getElementById('form-fields');
     const totalPriceElement = document.getElementById('total-price');
+    const registerPriceElement = document.getElementById('register-price');
     const formControlElement = document.getElementById('form-control');
 
     // フォームのフィールドを生成
@@ -40,7 +41,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 total += value;
             }
         });
+        let registerPrice = total*0.3
+        // 合計金額を表示
         totalPriceElement.textContent = total.toLocaleString();
+        registerPriceElement.textContent = registerPrice.toLocaleString();
     });
 
     // Submitボタンを追加
