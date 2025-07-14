@@ -45,6 +45,10 @@ header h1 {
     letter-spacing: 0.05em;
 }
 
+h2 {
+  margin: 0;
+}
+
 /* メインコンテンツ */
 main {
     padding: 1rem;
@@ -295,6 +299,64 @@ button:active {
 button:focus {
     outline: none;
     box-shadow: 0 0 0 2px rgba(51, 102, 51, 0.2), var(--md-shadow-1);
+}
+
+/* 必要素材一覧（material-summary） */
+.material-summary {
+  margin: 0 0 0.5rem 0;
+  background: var(--md-surface-variant);
+  border: 1px solid var(--md-outline-variant);
+  border-radius: 10px;
+  box-shadow: var(--md-shadow-1);
+  padding: 0.5em 1em;
+  font-size: 0.98em;
+  color: var(--md-on-surface-variant);
+}
+.material-summary-list {
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.7em;
+  list-style: none;
+  align-items: center;
+}
+.material-summary-item {
+  background: var(--md-surface);
+  border-radius: 6px;
+  padding: 0.2em 0.8em;
+  border: 1px solid var(--md-outline-variant);
+  font-size: 0.97em;
+  color: var(--md-on-surface-variant);
+  display: flex;
+  align-items: center;
+}
+
+/* 劣化パーツ サブカテゴリ名と入力を横並びに */
+.degradation-flex-label {
+  display: flex;
+  align-items: center;
+  gap: 0.5em;
+  margin-bottom: 0.2em;
+  font-size: 0.97em;
+  padding: 0.1em 0.2em;
+  justify-content: space-between;
+}
+.degradation-subcategory {
+  min-width: 5.5em;
+  color: var(--md-primary);
+  font-weight: 500;
+  font-size: 0.97em;
+  flex-shrink: 0;
+}
+
+/* 劣化パーツのドロップダウンを右端に揃え、矢印と内容が重ならないように */
+.degradation-flex-label select[data-category="劣化パーツ"] {
+  margin-left: auto;
+  min-width: 120px;
+  padding-right: 2.2em; /* 矢印分の余白を確保 */
+  background-position: right 0.8em center;
+  background-size: 1.2em;
 }
 
 /* レスポンシブデザイン */
