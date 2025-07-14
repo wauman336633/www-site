@@ -49,16 +49,16 @@ document.addEventListener('DOMContentLoaded', () => {
                 fieldset.appendChild(label);
             });
         } else if (singleSelectCategories.includes(category)) {
-            // 単一選択カテゴリはラジオボタン
+            // 単一選択カテゴリはチェックボックス（1カテゴリにつき1つだけ選択可）
             Object.keys(price[category]).forEach(level => {
                 const label = document.createElement('label');
-                const radio = document.createElement('input');
-                radio.type = 'radio';
-                radio.name = category;
-                radio.value = price[category][level];
-                radio.setAttribute('data-category', category);
-                radio.setAttribute('data-level', level);
-                label.appendChild(radio);
+                const checkbox = document.createElement('input');
+                checkbox.type = 'checkbox';
+                checkbox.name = category;
+                checkbox.value = price[category][level];
+                checkbox.setAttribute('data-category', category);
+                checkbox.setAttribute('data-level', level);
+                label.appendChild(checkbox);
                 label.appendChild(document.createTextNode(` ${level} (${price[category][level].toLocaleString()}円)`));
                 fieldset.appendChild(label);
             });
@@ -84,7 +84,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const materialCount = {};
         // 単一選択カテゴリ
         singleSelectCategories.forEach(category => {
-            const checked = formFields.querySelector(`input[type="radio"][data-category="${category}"]:checked`);
+            const checked = formFields.querySelector(`input[type="checkbox"][data-category="${category}"]:checked`);
             if (checked && materials[category]) {
                 const level = checked.getAttribute('data-level');
                 const mat = materials[category][level];
@@ -147,6 +147,29 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
 
+        // 単一選択カテゴリのチェックボックスは1カテゴリにつき1つだけ選択可にする
+        if (event.target.type === 'checkbox' && singleSelectCategories.includes(event.target.getAttribute('data-category'))) {
+            const category = event.target.getAttribute('data-category');
+            if (event.target.checked) {
+                // 同じカテゴリの他のチェックを外す
+                const checkboxes = formFields.querySelectorAll(`input[type="checkbox"][data-category="${category}"]`);
+                checkboxes.forEach(cb => {
+                    if (cb !== event.target) cb.checked = false;
+                });
+            }
+        }
+
+        // 単一選択カテゴリ（エンジン等）のチェックボックスの合計を計算
+        singleSelectCategories.forEach(category => {
+            const checked = formFields.querySelector(`input[type="checkbox"][data-category="${category}"]:checked`);
+            if (checked) {
+                const value = parseInt(checked.value, 10);
+                if (!isNaN(value)) {
+                    total += value;
+                }
+            }
+        });
+
         // ラジオボタンの合計を計算
         const radios = formFields.querySelectorAll('input[type="radio"]:checked');
         radios.forEach(radio => {
@@ -169,9 +192,22 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
 
+        // その他カテゴリ（単一選択・劣化パーツ以外）のチェックボックスの合計を計算
+        Object.keys(price).forEach(category => {
+            if (!singleSelectCategories.includes(category) && category !== '劣化パーツ') {
+                const checkboxes = formFields.querySelectorAll(`input[type="checkbox"][data-category="${category}"]:checked`);
+                checkboxes.forEach(checkbox => {
+                    const value = parseInt(checkbox.value, 10);
+                    if (!isNaN(value)) {
+                        total += value;
+                    }
+                });
+            }
+        });
+
         // 合計金額を表示
-        totalPriceElement.textContent = total.toLocaleString();
-        registerPriceElement.textContent = (total*0.3).toLocaleString();
+        if (window.totalPriceElement) window.totalPriceElement.textContent = total.toLocaleString();
+        if (window.registerPriceElement) window.registerPriceElement.textContent = (total*0.3).toLocaleString();
 
         // 必要素材集計も更新
         updateMaterialSummary();
@@ -179,6 +215,46 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // 初期化時に制限を適用
     // 劣化パーツの合計個数取得・制限関数、applyDegradationPartsLimit()などは不要なので削除
+
+    // ラジオボタンの再クリックで解除できるようにする
+    let _radioWasChecked = false;
+    let _radioTarget = null;
+    formFields.addEventListener('mousedown', function(event) {
+        let radio = null;
+        if (event.target.type === 'radio') {
+            radio = event.target;
+        } else if (event.target.tagName === 'LABEL') {
+            // label直下のinput[type=radio]またはfor属性
+            radio = event.target.querySelector('input[type="radio"]');
+            if (!radio && event.target.htmlFor) {
+                radio = document.getElementById(event.target.htmlFor);
+            }
+        }
+        if (radio) {
+            _radioWasChecked = radio.checked;
+            _radioTarget = radio;
+        } else {
+            _radioWasChecked = false;
+            _radioTarget = null;
+        }
+    }, true); // キャプチャ段階
+    formFields.addEventListener('click', function(event) {
+        let radio = null;
+        if (event.target.type === 'radio') {
+            radio = event.target;
+        } else if (event.target.tagName === 'LABEL') {
+            radio = event.target.querySelector('input[type="radio"]');
+            if (!radio && event.target.htmlFor) {
+                radio = document.getElementById(event.target.htmlFor);
+            }
+        }
+        if (radio && _radioWasChecked) {
+            radio.checked = false;
+            formFields.dispatchEvent(new Event('change', {bubbles:true}));
+        }
+        _radioWasChecked = false;
+        _radioTarget = null;
+    }, true); // キャプチャ段階
 
     // Submitボタンを追加
     const submitButton = document.createElement('button');
@@ -247,23 +323,38 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
 
-        totalPriceElement.textContent = '0'; // 合計金額をリセット
-        registerPriceElement.textContent = '0'; // 金庫金額をリセット
+        if (window.totalPriceElement) window.totalPriceElement.textContent = '0'; // 合計金額をリセット
+        if (window.registerPriceElement) window.registerPriceElement.textContent = '0'; // 金庫金額をリセット
         // 劣化パーツの合計個数取得・制限関数、applyDegradationPartsLimit()などは不要なので削除
         updateMaterialSummary(); // リセット時も素材集計をリセット
     });
 
     formControlElement.appendChild(resetButton); // ボタンをページに追加
     
-    // URLに特定の文字列が含まれる場合のみSubmitボタンと素材集計を表示
+    // 合計金額表示のp要素を取得
+    const totalPriceP = totalPriceElement.closest('p');
+
+    // URLに特定の文字列が含まれる場合のみ金庫金額も表示
     const currentURL = window.location.href;
     if (currentURL.includes('employee')) {
         // 合計金額表示の上にmaterialSummaryDivを挿入
-        const totalPriceP = totalPriceElement.closest('p');
         if (totalPriceP) {
             totalPriceP.parentNode.insertBefore(materialSummaryDiv, totalPriceP);
+            // 金庫金額も表示
+            totalPriceP.innerHTML = '合計金額: <span id="total-price">0</span>円 / 金庫金額: <span id="register-price">0</span>円';
+            // spanを書き換えたので再取得
+            window.totalPriceElement = document.getElementById('total-price');
+            window.registerPriceElement = document.getElementById('register-price');
         }
         updateMaterialSummary(); // 初期表示
         formControlElement.appendChild(submitButton); // ボタンをページに追加
+    } else {
+        // employeeでなければ金庫金額を非表示
+        if (totalPriceP) {
+            totalPriceP.innerHTML = '合計金額: <span id="total-price">0</span>円';
+            // spanを書き換えたので再取得
+            window.totalPriceElement = document.getElementById('total-price');
+            window.registerPriceElement = null;
+        }
     }
 });
