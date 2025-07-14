@@ -116,7 +116,32 @@ label:hover {
     box-shadow: var(--md-shadow-1);
 }
 
+/* チェックボックスが選択されている時のラベル */
+label:has(input[type="checkbox"]:checked) {
+    background-color: var(--md-primary-container);
+    border-color: var(--md-primary);
+    color: var(--md-on-primary-container);
+    font-weight: 500;
+    box-shadow: var(--md-shadow-1);
+}
+
+/* ラジオボタンが選択されている時のラベル */
+label:has(input[type="radio"]:checked) {
+    background-color: var(--md-primary-container);
+    border-color: var(--md-primary);
+    color: var(--md-on-primary-container);
+    font-weight: 500;
+    box-shadow: var(--md-shadow-1);
+}
+
 input[type="checkbox"] {
+    accent-color: var(--md-primary);
+    width: 16px;
+    height: 16px;
+    cursor: pointer;
+}
+
+input[type="radio"] {
     accent-color: var(--md-primary);
     width: 16px;
     height: 16px;
@@ -170,6 +195,12 @@ select option {
 select option:hover {
     background-color: var(--md-primary-container);
     color: var(--md-on-primary-container);
+}
+
+select option:checked {
+    background-color: var(--md-primary);
+    color: var(--md-on-primary);
+    font-weight: 500;
 }
 
 select option:disabled {
