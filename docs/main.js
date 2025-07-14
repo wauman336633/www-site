@@ -15,68 +15,84 @@ document.addEventListener('DOMContentLoaded', () => {
     // 単一選択のカテゴリ（price.jsのキー名に合わせて）
     const singleSelectCategories = ['エンジン', 'サスペンション', 'トランスミッション', 'ブレーキ'];
 
-    // フォームのフィールドを生成
-    Object.keys(price).forEach(category => {
+    // --- カテゴリごとのフォーム生成関数 ---
+    function renderSingleSelectCategory(category, price, formFields) {
         const fieldset = document.createElement('fieldset');
         const legend = document.createElement('legend');
         legend.textContent = category;
         fieldset.appendChild(legend);
-
-        if (category === '劣化パーツ') {
-            // 劣化パーツはサブカテゴリごとに1つのドロップダウン（LV選択）
-            Object.keys(price[category]).forEach(subCategory => {
-                const label = document.createElement('label');
-                label.className = 'degradation-flex-label';
-                const subLegend = document.createElement('span');
-                subLegend.textContent = subCategory;
-                subLegend.className = 'degradation-subcategory';
-                const select = document.createElement('select');
-                select.setAttribute('data-category', category);
-                select.setAttribute('data-subcategory', subCategory);
-                // 未選択用の空option
-                const emptyOption = document.createElement('option');
-                emptyOption.value = '';
-                emptyOption.textContent = '選択なし';
-                select.appendChild(emptyOption);
-                Object.keys(price[category][subCategory]).forEach(level => {
-                    const option = document.createElement('option');
-                    option.value = level;
-                    option.textContent = `${level} (${price[category][subCategory][level].toLocaleString()}円)`;
-                    select.appendChild(option);
-                });
-                label.appendChild(subLegend);
-                label.appendChild(select);
-                fieldset.appendChild(label);
-            });
-        } else if (singleSelectCategories.includes(category)) {
-            // 単一選択カテゴリはチェックボックス（1カテゴリにつき1つだけ選択可）
-            Object.keys(price[category]).forEach(level => {
-                const label = document.createElement('label');
-                const checkbox = document.createElement('input');
-                checkbox.type = 'checkbox';
-                checkbox.name = category;
-                checkbox.value = price[category][level];
-                checkbox.setAttribute('data-category', category);
-                checkbox.setAttribute('data-level', level);
-                label.appendChild(checkbox);
-                label.appendChild(document.createTextNode(` ${level} (${price[category][level].toLocaleString()}円)`));
-                fieldset.appendChild(label);
-            });
-        } else {
-            // その他のカテゴリはチェックボックス
-            Object.keys(price[category]).forEach(level => {
-                const label = document.createElement('label');
-                const checkbox = document.createElement('input');
-                checkbox.type = 'checkbox';
-                checkbox.value = price[category][level];
-                checkbox.setAttribute('data-category', category);
-                checkbox.setAttribute('data-level', level);
-                label.appendChild(checkbox);
-                label.appendChild(document.createTextNode(` ${level} (${price[category][level].toLocaleString()}円)`));
-                fieldset.appendChild(label);
-            });
-        }
+        Object.keys(price[category]).forEach(level => {
+            const label = document.createElement('label');
+            const checkbox = document.createElement('input');
+            checkbox.type = 'checkbox';
+            checkbox.name = category;
+            checkbox.value = price[category][level];
+            checkbox.setAttribute('data-category', category);
+            checkbox.setAttribute('data-level', level);
+            label.appendChild(checkbox);
+            label.appendChild(document.createTextNode(` ${level} (${price[category][level].toLocaleString()}円)`));
+            fieldset.appendChild(label);
+        });
         formFields.appendChild(fieldset);
+    }
+    function renderDegradationPartsCategory(category, price, formFields) {
+        const fieldset = document.createElement('fieldset');
+        const legend = document.createElement('legend');
+        legend.textContent = category;
+        fieldset.appendChild(legend);
+        Object.keys(price[category]).forEach(subCategory => {
+            const label = document.createElement('label');
+            label.className = 'degradation-flex-label';
+            const subLegend = document.createElement('span');
+            subLegend.textContent = subCategory;
+            subLegend.className = 'degradation-subcategory';
+            const select = document.createElement('select');
+            select.setAttribute('data-category', category);
+            select.setAttribute('data-subcategory', subCategory);
+            const emptyOption = document.createElement('option');
+            emptyOption.value = '';
+            emptyOption.textContent = '選択なし';
+            select.appendChild(emptyOption);
+            Object.keys(price[category][subCategory]).forEach(level => {
+                const option = document.createElement('option');
+                option.value = level;
+                option.textContent = `${level} (${price[category][subCategory][level].toLocaleString()}円)`;
+                select.appendChild(option);
+            });
+            label.appendChild(subLegend);
+            label.appendChild(select);
+            fieldset.appendChild(label);
+        });
+        formFields.appendChild(fieldset);
+    }
+    function renderOtherCategory(category, price, formFields) {
+        const fieldset = document.createElement('fieldset');
+        const legend = document.createElement('legend');
+        legend.textContent = category;
+        fieldset.appendChild(legend);
+        Object.keys(price[category]).forEach(level => {
+            const label = document.createElement('label');
+            const checkbox = document.createElement('input');
+            checkbox.type = 'checkbox';
+            checkbox.value = price[category][level];
+            checkbox.setAttribute('data-category', category);
+            checkbox.setAttribute('data-level', level);
+            label.appendChild(checkbox);
+            label.appendChild(document.createTextNode(` ${level} (${price[category][level].toLocaleString()}円)`));
+            fieldset.appendChild(label);
+        });
+        formFields.appendChild(fieldset);
+    }
+
+    // --- フォーム生成本体 ---
+    Object.keys(price).forEach(category => {
+        if (singleSelectCategories.includes(category)) {
+            renderSingleSelectCategory(category, price, formFields);
+        } else if (category === '劣化パーツ') {
+            renderDegradationPartsCategory(category, price, formFields);
+        } else {
+            renderOtherCategory(category, price, formFields);
+        }
     });
 
     // 必要素材を集計して表示する関数
