@@ -40,6 +40,32 @@ document.addEventListener('DOMContentLoaded', () => {
         const legend = document.createElement('legend');
         legend.textContent = category;
         fieldset.appendChild(legend);
+        // --- ここから追加 ---
+        const lv3Button = document.createElement('button');
+        lv3Button.type = 'button';
+        lv3Button.textContent = '全てLV3';
+        lv3Button.style.fontSize = '0.8em';
+        lv3Button.style.padding = '4px 10px';
+        lv3Button.style.margin = '8px 0 0 0';
+        lv3Button.style.background = '#e0e0e0'; // 少し濃いグレー
+        lv3Button.style.border = '1px solid #ccc';
+        lv3Button.style.borderRadius = '4px';
+        lv3Button.style.color = '#222'; // 文字色も濃く
+        lv3Button.style.cursor = 'pointer';
+        lv3Button.addEventListener('click', () => {
+            // このfieldset内のselect[data-category="劣化パーツ"]を全てLV3に
+            const selects = fieldset.querySelectorAll('select[data-category="劣化パーツ"]');
+            selects.forEach(select => {
+                // LV3が選択肢にある場合のみ
+                const lv3Option = Array.from(select.options).find(opt => opt.value === 'LV3');
+                if (lv3Option) {
+                    select.value = 'LV3';
+                    // changeイベントを発火させて合計金額等も更新
+                    select.dispatchEvent(new Event('change', {bubbles:true}));
+                }
+            });
+        });
+        // --- ここまで追加 ---
         Object.keys(price[category]).forEach(subCategory => {
             const label = document.createElement('label');
             label.className = 'degradation-flex-label';
@@ -63,6 +89,7 @@ document.addEventListener('DOMContentLoaded', () => {
             label.appendChild(select);
             fieldset.appendChild(label);
         });
+        fieldset.appendChild(lv3Button);
         formFields.appendChild(fieldset);
     }
     function renderOtherCategory(category, price, formFields) {
